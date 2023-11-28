@@ -33,14 +33,10 @@ def GPT_response(text):
     # 重組回應並替換句號
     answer = response['choices'][0]['text'].replace('。', '')
     
-    # 使用正則表達式去掉開頭的問號和空格
-    answer = re.sub(r'^[ ?]+', '', answer)
+    # 去掉開頭的問號和空格
+    answer = answer.lstrip('?').lstrip()
     
-    # 將回答的單詞進行排序
-    sorted_answer = ' '.join(sorted(answer.split()))
-    
-    return sorted_answer
-
+    return answer
 
 # 監聽所有來自 /callback 的 Post Request
 @app.route("/callback", methods=['POST'])
