@@ -30,8 +30,11 @@ def GPT_response(text):
     # 接收回應
     response = openai.Completion.create(model="text-davinci-003", prompt=text, temperature=0.5, max_tokens=500)
     
-    # 重組回應並替換句號，同時去掉開頭的問號和空格
-    answer = response['choices'][0]['text'].replace('。', '').lstrip('?').lstrip()
+    # 重組回應並替換句號
+    answer = response['choices'][0]['text'].replace('。', '')
+    
+    # 去掉開頭的問號和空格
+    answer = answer.lstrip('?').lstrip()
     
     return answer
 
