@@ -25,6 +25,7 @@ handler = WebhookHandler(os.getenv('CHANNEL_SECRET'))
 # OPENAI API Key初始化設定
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
+import re
 
 def GPT_response(text):
     # 接收回應
@@ -33,11 +34,10 @@ def GPT_response(text):
     # 重組回應並替換句號
     answer = response['choices'][0]['text'].replace('。', '')
     
-    # 去掉開頭的問號和空格
-    answer = answer.lstrip('?').lstrip()
+    # 使用正則表達式去掉開頭的問號和空格
+    answer = re.sub(r'^[ ?]+', '', answer)
     
     return answer
-
 
 # 監聽所有來自 /callback 的 Post Request
 @app.route("/callback", methods=['POST'])
