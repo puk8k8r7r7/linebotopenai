@@ -26,17 +26,14 @@ handler = WebhookHandler(os.getenv('CHANNEL_SECRET'))
 # OPENAI API Key初始化設定
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
-# Weather API token
-weather_token = 'CWA-4A8C2179-9849-40EB-947F-FD750B13862E'
-weather_url = 'https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-C0032-001'
+cities = ['基隆市', '嘉義市', '臺北市', '嘉義縣', '新北市', '臺南市', '桃園縣', '高雄市', '新竹市', '屏東縣', '新竹縣', '臺東縣', '苗栗縣', '花蓮縣', '臺中市']
 
 def get_weather(city):
-    headers = {'Authorization': weather_token}
-    params = {'format': 'JSON', 'locationName': city}
-    response = requests.get(weather_url, headers=headers, params=params)
-    data = response.json()['records']['location'][0]['weatherElement']
-    
-    res = [[] , [] , []]
+    token = 'CWA-4A8C2179-9849-40EB-947F-FD750B13862E'
+    url = 'https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-C0032-001?Authorization=' + token + '&format=JSON&locationName=' + str(city)
+    data = requests.get(url)
+    data = (json.loads(data.text, encoding='utf-8'))['records']['location'][0]['weatherElement']
+    res = [[], [], []]
     for j in range(3):
         for i in data:
             res[j].append(i['time'][j])
