@@ -15,8 +15,8 @@ app = Flask(__name__)
 static_tmp_path = os.path.join(os.path.dirname(__file__), 'static', 'tmp')
 
 # LINE BOT info
-line_bot_api = LineBotApi('Channel Access Token')  # 替換成你的 Channel Access Token
-handler = WebhookHandler('Channel Secret')  # 替換成你的 Channel Secret
+line_bot_api = LineBotApi('CHANNEL_ACCESS_TOKEN')  # 替換成你的 Channel Access Token
+handler = WebhookHandler('CHANNEL_SECRET')  # 替換成你的 Channel Secret
 
 # OPENAI API Key初始化設定
 openai.api_key = os.getenv('OPENAI_API_KEY')  # 請確保你的 OPENAI_API_KEY 已經設定
