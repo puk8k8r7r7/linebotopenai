@@ -15,6 +15,7 @@ import openai
 import time
 import traceback
 import requests
+import json
 #======python的函數庫==========
 
 app = Flask(__name__)
@@ -31,13 +32,24 @@ cities = ['基隆市', '嘉義市', '臺北市', '嘉義縣', '新北市', '臺�
 def get_weather(city):
     token = 'CWA-4A8C2179-9849-40EB-947F-FD750B13862E'
     url = 'https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-C0032-001?Authorization=' + token + '&format=JSON&locationName=' + str(city)
-    data = requests.get(url)
-    data = (json.loads(data.text, encoding='utf-8'))['records']['location'][0]['weatherElement']
-    res = [[], [], []]
-    for j in range(3):
-        for i in data:
-            res[j].append(i['time'][j])
-    return res
+    
+    try:
+        data = requests.get(url)
+        data.raise_for_status()  # Check if the request was successful
+        data = data.json()
+        data = data['records']['location'][0]['weatherElement']
+        
+        res = [[], [], []]
+        for j in range(3):
+            for i in data:
+                res[j].append(i['time'][j])
+        
+        return res
+    
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching weather data: {e}")
+        return None
+
 
 def GPT_response(text):
     # 接收回應
