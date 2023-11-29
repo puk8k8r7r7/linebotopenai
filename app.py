@@ -21,12 +21,12 @@ cities = ['基隆市', '嘉義市', '臺北市', '嘉義縣', '新北市', '臺�
 
 # 空氣品質查詢函數
 def get_air_quality(city):
-    url = f'https://data.moenv.gov.tw/api/v1/aqx_p_02?format=json&offset=0&limit=5&1710a1b3-c964-41ad-a1e8-2d7705d5bc84
+    url = f'https://data.moenv.gov.tw/api/v1/aqx_p_02?format=json&offset=0&limit=5&api_key=1710a1b3-c964-41ad-a1e8-2d7705d5bc84'
     response = requests.get(url)
     data = response.json()
-    air_quality = data['list'][0]['main']['aqi']
+    air_quality = data['data'][0]['AQI']
     return air_quality
-
+    
 # OPENAI GPT 回應函數
 def GPT_response(text):
     # 接收回應
