@@ -16,7 +16,7 @@ static_tmp_path = os.path.join(os.path.dirname(__file__), 'static', 'tmp')
 
 # LINE BOT info
 line_bot_api = LineBotApi(os.getenv('CHANNEL_ACCESS_TOKEN'))  # 替換成你的 Channel Access Token
-handler = WebhookHandler(os.getenv('CHANNEL_SECRET')) # 替換成你的 Channel Secret
+handler = WebhookHandler(os.getenv('CHANNEL_SECRET'))  # 替換成你的 Channel Secret
 
 # OPENAI API Key初始化設定
 openai.api_key = os.getenv('OPENAI_API_KEY')  # 請確保你的 OPENAI_API_KEY 已經設定
@@ -37,7 +37,6 @@ def get(city):
 # Message event
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-     print("Handling message...")
     message_type = event.message.type
     user_id = event.source.user_id
     reply_token = event.reply_token
@@ -76,4 +75,5 @@ def handle_message(event):
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 80))
     app.run(host='0.0.0.0', port=port)
+
 
