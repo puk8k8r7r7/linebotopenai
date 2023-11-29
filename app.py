@@ -77,7 +77,7 @@ def handle_message(event):
         if not (city in cities):
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text="查詢格式為: 天氣 縣市"))
         else:
-            weather_data = get_weather(city)
+            res = get(city)
             line_bot_api.reply_message(event.reply_token, TemplateSendMessage(
                 alt_text=f'{city}未來 36 小時天氣預測',
                 template=CarouselTemplate(
