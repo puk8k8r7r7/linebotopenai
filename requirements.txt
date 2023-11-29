@@ -1,5 +1,5 @@
 line-bot-sdk
-json
 flask
 openai < 1.0.0
 gunicorn
+requests
