@@ -31,6 +31,12 @@ cwb_api_key = os.getenv('CWB_API_KEY')
 cities = ['基隆市', '嘉義市', '臺北市', '嘉義縣', '新北市', '臺南市', '桃園縣', '高雄市', '新竹市', '屏東縣', '新竹縣', '臺東縣', '苗栗縣', '花蓮縣', '臺中市', '宜蘭縣', '彰化縣', '澎湖縣', '南投縣', '金門縣', '雲林縣', '連江縣']
 
 def get_weather(city):
+    url = f'https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-C0032-001?Authorization={cwb_api_key}&format=JSON&locationName={city}'
+    data = requests.get(url).json()
+    weather_data = data['records']['location'][0]['weatherElement']
+    return weather_data
+
+def get_weather(city):
     url = f'https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-C0032-001?Authorization={CWB_API_KEY}&format=JSON&locationName={city}'
     data = requests.get(url).json()
     weather_data = data['records']['location'][0]['weatherElement']
