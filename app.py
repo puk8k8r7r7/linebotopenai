@@ -26,29 +26,17 @@ line_bot_api = LineBotApi(os.getenv('CHANNEL_ACCESS_TOKEN'))
 handler = WebhookHandler(os.getenv('CHANNEL_SECRET'))
 # OPENAI API Key初始化設定
 openai.api_key = os.getenv('OPENAI_API_KEY')
-
-cities = ['基隆市', '嘉義市', '臺北市', '嘉義縣', '新北市', '臺南市', '桃園縣', '高雄市', '新竹市', '屏東縣', '新竹縣', '臺東縣', '苗栗縣', '花蓮縣', '臺中市']
-
-def get_weather(city):
+cities = ['基隆市','嘉義市','臺北市','嘉義縣','新北市','臺南市','桃園縣','高雄市','新竹市','屏東縣','新竹縣','臺東縣','苗栗縣','花蓮縣','臺中市','宜蘭縣','彰化縣','澎湖縣','南投縣','金門縣','雲林縣','連江縣']
+def get(city):
     token = 'CWA-4A8C2179-9849-40EB-947F-FD750B13862E'
-    url = 'https://opendata.cwa.gov.tw/fileapi/v1/opendataapi/F-C0032-001?Authorization=' + token + '&format=JSON&locationName=' + str(city)
-    
-    try:
-        data = requests.get(url)
-        data.raise_for_status()  # Check if the request was successful
-        data = data.json()
-        data = data['records']['location'][0]['weatherElement']
-        
-        res = [[], [], []]
-        for j in range(3):
-            for i in data:
-                res[j].append(i['time'][j])
-        
-        return res
-    
-    except requests.exceptions.RequestException as e:
-        print(f"Error fetching weather data: {e}")
-        return None
+    url = 'https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-C0032-001?Authorization=' + token + '&format=JSON&locationName=' + str(city)
+    Data = requests.get(url)
+    Data = (json.loads(Data.text,encoding='utf-8'))['records']['location'][0]['weatherElement']
+    res = [[] , [] , []]
+    for j in range(3):
+        for i in Data:
+            res[j].append(i['time'][j])
+    return res
 
 
 def GPT_response(text):
