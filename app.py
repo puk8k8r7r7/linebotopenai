@@ -66,38 +66,38 @@ def callback():
         abort(400)
     return 'OK'
 
-# 處理訊息
-@handler.add(MessageEvent, message=TextMessage)
+# Message event
+@handler.add(MessageEvent)
 def handle_message(event):
-    msg = event.message.text
-    
-    if msg.startswith('天氣'):
-        city = msg[3:]
-        city = city.replace('台', '臺')
-        if not (city in cities):
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(text="查詢格式為: 天氣 縣市"))
+    message_type = event.message.type
+    user_id = event.source.user_id
+    reply_token = event.reply_token
+    message = event.message.text
+    if(message[:2] == '天氣'):
+        city = message[3:]
+        city = city.replace('台','臺')
+        if(not (city in cities)):
+            line_bot_api.reply_message(reply_token,TextSendMessage(text="查詢格式為: 天氣 縣市"))
         else:
             res = get(city)
-           line_bot_api.reply_message(event.reply_token, TemplateSendMessage(
-    alt_text=f'{city}未來 36 小時天氣預測',
-    template=CarouselTemplate(
-        columns=[
-            CarouselColumn(
-                thumbnail_image_url='https://i.imgur.com/Ex3Opfo.png',
-                title='{} ~ {}'.format(res[0][0]['startTime'][5:-3], res[0][0]['endTime'][5:-3]),
-                text='天氣狀況 {}\n溫度 {} ~ {} °C\n降雨機率 {}'.format(
-                    data[0]['parameter']['parameterName'], data[2]['parameter']['parameterName'],
-                    data[4]['parameter']['parameterName'], data[1]['parameter']['parameterName']),
-                actions=[
-                    URIAction(
-                        label='詳細內容',
-                        uri='https://www.cwb.gov.tw/V8/C/W/County/index.html'
-                    )
-                ]
-            ) for data in res
-        ]
-    )
-))
+            line_bot_api.reply_message(reply_token, TemplateSendMessage(
+                alt_text = city + '未來 36 小時天氣預測',
+                template = CarouselTemplate(
+                    columns = [
+                        CarouselColumn(
+                            thumbnail_image_url = 'https://i.imgur.com/Ex3Opfo.png',
+                            title = '{} ~ {}'.format(res[0][0]['startTime'][5:-3],res[0][0]['endTime'][5:-3]),
+                            text = '天氣狀況 {}\n溫度 {} ~ {} °C\n降雨機率 {}'.format(data[0]['parameter']['parameterName'],data[2]['parameter']['parameterName'],data[4]['parameter']['parameterName'],data[1]['parameter']['parameterName']),
+                            actions = [
+                                URIAction(
+                                    label = '詳細內容',
+                                    uri = 'https://www.cwb.gov.tw/V8/C/W/County/index.html'
+                                )
+                            ]
+                        )for data in res
+                    ]
+                )
+            ))
     else:
         GPT_answer = GPT_response(msg)
         print(GPT_answer)
