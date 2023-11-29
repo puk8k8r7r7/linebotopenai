@@ -15,14 +15,13 @@ line_bot_api = LineBotApi(os.getenv('CHANNEL_ACCESS_TOKEN'))
 handler = WebhookHandler(os.getenv('CHANNEL_SECRET'))
 # OPENAI API Key初始化設定
 openai.api_key = os.getenv('OPENAI_API_KEY')
-# 空氣汙染 API Key
-token = '1710a1b3-c964-41ad-a1e8-2d7705d5bc84'  # 您提供的金鑰
+
 # 支援的城市列表
 cities = ['基隆市', '嘉義市', '臺北市', '嘉義縣', '新北市', '臺南市', '桃園縣', '高雄市', '新竹市', '屏東縣', '新竹縣', '臺東縣', '苗栗縣', '花蓮縣', '臺中市']
 
 # 空氣品質查詢函數
 def get_air_quality(city):
-    url = f'https://data.moenv.gov.tw/api/v2/aqx_p_02?offset=0&limit=1000&api_key={token}
+    url = f'https://data.moenv.gov.tw/api/v1/aqx_p_02?format=json&offset=0&limit=5&1710a1b3-c964-41ad-a1e8-2d7705d5bc84
     response = requests.get(url)
     data = response.json()
     air_quality = data['list'][0]['main']['aqi']
