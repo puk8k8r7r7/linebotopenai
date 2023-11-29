@@ -22,7 +22,7 @@ cities = ['基隆市', '嘉義市', '臺北市', '嘉義縣', '新北市', '臺�
 
 # 空氣品質查詢函數
 def get_air_quality(city):
-    url = f'https://api.openweathermap.org/data/2.5/air_pollution?q={city}&appid={air_pollution_api_key}'
+    url = f'https://data.moenv.gov.tw/api/v2/qpx_p_02?format={json}&year_month={yyyy_mm}&offset={offset}&limit={limit}&api_key={air_pollution_api_key}
     response = requests.get(url)
     data = response.json()
     air_quality = data['list'][0]['main']['aqi']
