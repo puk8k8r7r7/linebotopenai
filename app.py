@@ -27,7 +27,7 @@ handler = WebhookHandler(os.getenv('CHANNEL_SECRET'))
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
 # 空汙 API 的網址
-pm25_api_url = "https://pm25.lass-net.org/API-1.0.0/device/08BEAC0A08AE/latest/?format=JSON"
+pm25_api_url = "https://data.moenv.gov.tw/api/v2/aqx_p_02?api_key=1710a1b3-c964-41ad-a1e8-2d7705d5bc84"
 
 def GPT_response(text):
     # 接收回應
@@ -42,10 +42,9 @@ def GPT_response(text):
     return answer
 
 # 取得空汙資訊的函數
-def get_air_quality():
+def get_air_quality(location=None):
     try:
-        api_url = "https://data.moenv.gov.tw/api/v2/aqx_p_02?api_key=1710a1b3-c964-41ad-a1e8-2d7705d5bc84"
-        response = requests.get(api_url)
+        response = requests.get(pm25_api_url)
         data = response.json()
 
         if 'records' in data:
@@ -54,6 +53,11 @@ def get_air_quality():
                 # 假設我們關心的是第一筆資料
                 record = records[0]
                 site_name = record.get('SiteName', '未知地點')
+
+                # 如果有提供特定地區，則使用該地區
+                if location:
+                    site_name = location
+
                 pm25_value = record.get('PM2.5', '未知')
                 return f'{site_name} 的 PM2.5 值為 {pm25_value}'
             else:
@@ -64,21 +68,6 @@ def get_air_quality():
     except Exception as e:
         print(f"Error retrieving air quality: {e}")
         return '無法取得空氣品質資訊'
-
-# 監聽所有來自 /callback 的 Post Request
-@app.route("/callback", methods=['POST'])
-def callback():
-    # get X-Line-Signature header value
-    signature = request.headers['X-Line-Signature']
-    # get request body as text
-    body = request.get_data(as_text=True)
-    app.logger.info("Request body: " + body)
-    # handle webhook body
-    try:
-        handler.handle(body, signature)
-    except InvalidSignatureError:
-        abort(400)
-    return 'OK'
 
 # 處理訊息
 @handler.add(MessageEvent, message=TextMessage)
@@ -112,5 +101,4 @@ import os
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
-
 
