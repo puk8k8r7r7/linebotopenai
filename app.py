@@ -21,7 +21,7 @@ openai.api_key = os.getenv('OPENAI_API_KEY')
 
 # 空汙 API 的網址
 pm25_api_url = "https://data.moenv.gov.tw/api/v2/aqx_p_02?api_key=1710a1b3-c964-41ad-a1e8-2d7705d5bc84"
-"
+
 
 # 支援的地區
 supported_locations = [
