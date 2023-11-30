@@ -1,3 +1,4 @@
+import os
 import requests
 from flask import Flask, request, abort
 
@@ -17,6 +18,7 @@ openai.api_key = os.getenv('OPENAI_API_KEY')
 
 # 即時匯率 API 的 URL
 currency_api_url = 'https://tw.rter.info/capi.php'
+
 
 def get_exchange_rates():
     try:
