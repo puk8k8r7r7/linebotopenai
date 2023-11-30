@@ -1,5 +1,4 @@
 from flask import Flask, request, abort
-
 from linebot import (
     LineBotApi, WebhookHandler
 )
@@ -7,27 +6,23 @@ from linebot.exceptions import (
     InvalidSignatureError
 )
 from linebot.models import *
-
-#======python的函數庫==========
 import tempfile, os
 import datetime
 import openai
 import time
 import traceback
-import requests  # 新增引用 requests
-#======python的函數庫==========
+import requests  # 引用 requests 模組
 
 app = Flask(__name__)
 static_tmp_path = os.path.join(os.path.dirname(__file__), 'static', 'tmp')
-# Channel Access Token
 line_bot_api = LineBotApi(os.getenv('CHANNEL_ACCESS_TOKEN'))
-# Channel Secret
 handler = WebhookHandler(os.getenv('CHANNEL_SECRET'))
-# OPENAI API Key初始化設定
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
 # 空汙 API 的網址
-pm25_api_url = "https://data.moenv.gov.tw/api/v2/aqx_p_02?api_key=1710a1b3-c964-41ad-a1e8-2d7705d5bc84"
+pm25_api_url = "https://data.moenv.gov.tw/api/v2/aqx_p_02"
+api_key = "1710a1b3-c964-41ad-a1e8-2d7705d5bc84"
+
 # 支援的地區
 supported_locations = [
     '臺北市', '新北市', '桃園市', '臺中市', '臺南市', '高雄市',
@@ -51,7 +46,13 @@ def GPT_response(text):
 # 取得空汙資訊的函數
 def get_air_quality(location=None):
     try:
-        response = requests.get(pm25_api_url)
+        headers = {
+            "accept": "*/*"
+        }
+        params = {
+            "api_key": api_key
+        }
+        response = requests.get(pm25_api_url, headers=headers, params=params)
         data = response.json()
 
         if 'records' in data:
