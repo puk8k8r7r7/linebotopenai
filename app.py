@@ -29,6 +29,14 @@ openai.api_key = os.getenv('OPENAI_API_KEY')
 # 空汙 API 的網址
 pm25_api_url = "https://data.moenv.gov.tw/api/v2/aqx_p_02?api_key=1710a1b3-c964-41ad-a1e8-2d7705d5bc84"
 
+# 支援的地區
+supported_locations = [
+    '臺北市', '新北市', '桃園市', '臺中市', '臺南市', '高雄市',
+    '宜蘭縣', '新竹縣', '苗栗縣', '彰化縣', '南投縣', '雲林縣',
+    '嘉義縣', '屏東縣', '花蓮縣', '臺東縣', '澎湖縣',
+    '基隆市', '新竹市', '嘉義市'
+]
+
 def GPT_response(text):
     # 接收回應
     response = openai.Completion.create(model="text-davinci-003", prompt=text, temperature=0.5, max_tokens=500)
@@ -50,16 +58,12 @@ def get_air_quality(location=None):
         if 'records' in data:
             records = data['records']
             if records:
-                # 假設我們關心的是第一筆資料
-                record = records[0]
-                site_name = record.get('SiteName', '未知地點')
-
-                # 如果有提供特定地區，則使用該地區
-                if location:
-                    site_name = location
-
-                pm25_value = record.get('PM2.5', '未知')
-                return f'{site_name} 的 PM2.5 值為 {pm25_value}'
+                for record in records:
+                    site_name = record.get('SiteName', '未知地點')
+                    if location and location in site_name:
+                        pm25_value = record.get('PM2.5', '未知')
+                        return f'{site_name} 的 PM2.5 值為 {pm25_value}'
+                return '找不到該地區的空氣品質資料'
             else:
                 return '沒有空氣品質資料'
         else:
@@ -69,14 +73,34 @@ def get_air_quality(location=None):
         print(f"Error retrieving air quality: {e}")
         return '無法取得空氣品質資訊'
 
+# 監聽所有來自 /callback 的 Post Request
+@app.route("/callback", methods=['POST'])
+def callback():
+    # get X-Line-Signature header value
+    signature = request.headers['X-Line-Signature']
+    # get request body as text
+    body = request.get_data(as_text=True)
+    app.logger.info("Request body: " + body)
+    # handle webhook body
+    try:
+        handler.handle(body, signature)
+    except InvalidSignatureError:
+        abort(400)
+    return 'OK'
+
 # 處理訊息
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     msg = event.message.text
 
     # 判斷是否為特定指令
-    if msg.lower() == '空氣品質':
-        air_quality_info = get_air_quality()
+    if '空氣品質' in msg:
+        location = None
+        for loc in supported_locations:
+            if loc in msg:
+                location = loc
+                break
+        air_quality_info = get_air_quality(location)
         line_bot_api.reply_message(event.reply_token, TextSendMessage(air_quality_info))
     else:
         # 使用 GPT-3 生成回應
